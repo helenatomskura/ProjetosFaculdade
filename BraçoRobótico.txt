@@ -1,0 +1,131 @@
+#include <Servo.h>
+
+
+Servo base;
+Servo garra;
+Servo direito;
+Servo esquerdo;
+
+
+// POS INICIAIS 
+int baseInicial = 70;
+int garraposini = 180;
+int garraabre = 110;
+int garrafecha = 170;
+int direitoinicial = 70;
+int esquerdoinicial = 180;
+
+
+void setup() {
+  base.attach(2); // colocar base no pino 2
+  garra.attach(3); //colocar garra no pino 3
+  direito.attach(4); // colocar direito no pino 4
+  esquerdo.attach(5); //colocar esquerdo no pino 5
+
+
+  // TODOS OS SERVOS PARA POS INICIAIS
+  base.write(baseInicial);
+  garra.write(garraposini);
+  direito.write(direitoinicial);
+  esquerdo.write(esquerdoinicial);
+  delay(800);
+}
+
+
+void loop() {
+
+
+  // IR PARA PINO 1 PEGAR PEÇA PEQUENA 
+  moverServo(base, baseInicial, 165, 10);  // base vai para pos pino 1
+  moverServo(garra, garraposini, garraabre, 10); // garra abre
+  moverServo(esquerdo, esquerdoinicial, 115, 10); // esquerdo desce
+  moverServo(direito, direitoinicial, 95, 10); // direito vai pra frente 
+  moverServo(garra, garraabre, garrafecha, 10); // garra fecha (pega peça)
+  delay(500);
+
+
+  // VOLTAR POS INICIAL direito e esquerdo
+  moverServo(esquerdo, 110, esquerdoinicial, 10); 
+  moverServo(direito, 115, direitoinicial, 10);
+
+
+  // LEVANTAR, IR PARA PINO 2, SOLTAR PEÇA PEQUENA 
+  moverServo(base, 160, 68, 10);               // base vai para pos pino 2
+  moverServo(direito, direitoinicial, 110, 10);     // direito vai para frente 
+  moverServo(esquerdo, esquerdoinicial, 110, 10); // esquerdo desce 
+  moverServo(garra, garrafecha, garraabre, 10); // garra abre (solta a peça pequena)
+
+
+  // VOLTAR POS INICIAL direito e esquerdo
+  moverServo(esquerdo, 130, esquerdoinicial, 10);
+  moverServo(direito, 115, direitoinicial, 10);
+
+
+  // IR PARA PINO 1, PEGAR PEÇA GRANDE
+  moverServo(base, 68, 160, 10);  // base vai para pos pino 1 
+  moverServo(esquerdo, esquerdoinicial, 80, 10);   // esquerdo desce
+  moverServo(direito, direitoinicial, 130, 10);   // direito vai pra frente
+  moverServo(garra, garraabre, garrafecha, 10); // garra fecha (pega peça grande)
+  delay(500);
+  
+  // VOLTAR POS INICIAL
+  moverServo(esquerdo, 80, esquerdoinicial, 10);
+  moverServo(direito, 80, direitoinicial, 10);
+
+
+  // IR PARA POS PINO 3, SOLTAR PEÇA GRANDE
+  moverServo(base, 160, 5, 10);               // base vai pra pos pino 3 
+  moverServo(direito, direitoinicial, 90, 10);     // direito vai para frente 
+  moverServo(esquerdo, esquerdoinicial, 110, 10); // esquerdo desce 
+  moverServo(garra, garrafecha, garraabre, 10); // garra abre (solta a peça grande)
+
+
+  // VOLTAR POS INICIAL
+  moverServo(esquerdo, 130, esquerdoinicial, 10);
+  moverServo(direito, 120, direitoinicial, 10);
+  
+  // PEGAR PEÇA PEQUENA PINO 2 
+  moverServo(base, 0, 75, 10);  // base vai pra pos do pino 2
+  moverServo(esquerdo, esquerdoinicial, 120, 10);   // esquerdo desce
+  moverServo(direito, direitoinicial, 125, 10);   // direito vai pra frente 
+  moverServo(garra, garraabre, garrafecha, 10); // garra fecha (pegar peça pequena)
+  delay(500);
+
+
+  // VOLTAR POS INICIAL
+  moverServo(esquerdo, 110, esquerdoinicial, 10);
+  moverServo(direito, 80, direitoinicial, 10);
+
+
+  // LEVAR PEÇA PEQUENA PARA PINO 3 (EM CIMA DA PEÇA GRANDE) E SOLTAR 
+  moverServo(base, 72, 0, 10);               // base vai para pos do pino 3
+  moverServo(direito, direitoinicial, 90, 10);     // direito vai para frente 
+  moverServo(esquerdo, esquerdoinicial, 130, 10); // esquerdo desce 
+  moverServo(garra, garrafecha, garraabre, 10); // garra abre (solta peça pequena)
+
+
+  // VOLTA TODOS OS SERVOS PARA POS INICIAL
+  moverServo(esquerdo, 120,esquerdoinicial, 10);
+  moverServo(direito, 100, direitoinicial, 10);
+  moverServo(base, 0, 68, 10);
+  moverServo(garra, garraposini, garraposini, 10);
+
+
+  while(true);
+}
+
+
+  //FUNÇÃO MOVER O SERVO SUAVE
+void moverServo(Servo &s, int inicio, int fim, int velo) {
+  if (inicio < fim) {
+    for (int i = inicio; i <= fim; i++) {
+      s.write(p);
+      delay(velo);
+    }
+  } else {
+    for (int i = inicio; i >= fim; i--) {
+      s.write(p);
+      delay(velo);
+    }
+  }
+}

@@ -1,0 +1,91 @@
+#Integrante 1: Helena Tom Skura
+#Integrante 2: Henrique Faria
+#Integrante 3: Pedro Vinícius Ribeiro Piekarski
+
+from hub import light_matrix, sound, port
+import runloop, motor_pair, distance_sensor, force_sensor, color_sensor, color
+
+vel_máx = 1000
+
+def pressionado():
+    return force_sensor.pressed(port.D)# botão de força
+
+def distancia():
+    return distance_sensor.distance(port.C)# medir a distância em mm
+
+def vel(distance):
+    if distance is None:# Se não detectar nada
+        return vel_máx
+    elif distance >= 200:# Mais de 200mm = obstáculo longe
+        return vel_máx
+    elif 100 < distance < 200:# 100-200mm = reduz para 50%
+        return 500
+    elif 50 < distance <= 100:# 50-100mm = reduz para 20%
+        return 200
+    else:# distance <= 50mm = muito perto, anda devagar
+        return 100
+def cor():
+    return color_sensor.color(port.E)
+
+async def main():
+    motor_pair.pair(motor_pair.PAIR_1, port.A, port.B) #inicia os pares de motores
+    motor_pair.move_tank(motor_pair.PAIR_1, vel_máx, vel_máx) # ele começar andando para frente na velocidade máxima
+
+    while True:
+        dist = distancia()
+        pressed = pressionado()
+        cor_atual = cor()
+
+        if cor_atual == color.BLACK: # verificar a cor preta primeiro
+            motor_pair.stop(motor_pair.PAIR_1)
+            light_matrix.show_image(light_matrix.IMAGE_HAPPY)
+            sound.volume(100)
+            await sound.beep(261, 250)
+            await sound.beep(293, 250)
+            await sound.beep(329, 250)
+            await sound.beep(349, 250)
+            await runloop.sleep_ms(250)
+            await sound.beep(349, 250)
+            await sound.beep(349, 250)
+            await runloop.sleep_ms(250)
+            await sound.beep(261, 250)
+            await sound.beep(293, 250)
+            await sound.beep(261, 250)
+            await sound.beep(293, 250)
+            await runloop.sleep_ms(250)
+            await sound.beep(293, 250)
+            await sound.beep(293, 250)
+            await runloop.sleep_ms(250)
+            await sound.beep(261, 250)
+            await sound.beep(392, 250)
+            await sound.beep(349, 250)
+            await sound.beep(329, 250)
+            await runloop.sleep_ms(250)
+            await sound.beep(329, 250)
+            await sound.beep(329, 250)
+            await runloop.sleep_ms(250)
+            await sound.beep(261, 250)
+            await sound.beep(293, 250)
+            await sound.beep(329, 250)
+            await sound.beep(349, 250)
+            await runloop.sleep_ms(250)
+            await sound.beep(349, 250)
+            await sound.beep(349, 250)
+            break #Sai do While True
+
+        velocidade = vel(dist) #ajustar velocidade baseada na distância
+        motor_pair.move_tank(motor_pair.PAIR_1, velocidade, velocidade)
+
+        if pressed: # Verificar se sensor de força foi pressionado
+            motor_pair.stop(motor_pair.PAIR_1)
+            sound.beep(80, 300)
+            await runloop.sleep_ms(200)
+
+            curva = 194 # gira 90 graus
+            await motor_pair.move_tank_for_degrees(motor_pair.PAIR_1, curva, 600, -600)
+
+            motor_pair.move_tank(motor_pair.PAIR_1, vel_máx, vel_máx)
+
+        await runloop.sleep_ms(100)
+
+runloop.run(main())
